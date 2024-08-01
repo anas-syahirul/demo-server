@@ -22,7 +22,6 @@ const prisma = new PrismaClient()
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-// cors access handler
 app.use(cors())
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
