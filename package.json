@@ -5,7 +5,8 @@
   "scripts": {
     "start": "npx tsc -w",
     "dev": "npx nodemon",
-    "build": "npx prisma generate && tsc",
+    "postinstall": "prisma generate",
+    "build": "tsc",
     "migrate:deploy": "npx prisma migrate deploy"
   },
   "author": "Anas Syahirul Alim",
