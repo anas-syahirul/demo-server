@@ -5,11 +5,11 @@ import {
   getCurrentMonthRecapController,
   getRevenueAndCOGS
 } from './report.controller'
-import { requireUser } from '../middlewares/authorization'
+import { requireUser, verifyToken } from '../middlewares/authorization'
 
 export const ReportRouter: Router = Router()
 
-ReportRouter.get('/current-month', requireUser, getCurrentMonthRecapController)
-ReportRouter.get('/revenue-and-cogs', requireUser, getRevenueAndCOGS)
-ReportRouter.post('/net-income-calculation', requireUser, calculateNetIncomeController)
-ReportRouter.post('/financial-report', requireUser, generateFinancialReportController)
+ReportRouter.get('/current-month', verifyToken, getCurrentMonthRecapController)
+ReportRouter.get('/revenue-and-cogs', verifyToken, getRevenueAndCOGS)
+ReportRouter.post('/net-income-calculation', verifyToken, calculateNetIncomeController)
+ReportRouter.post('/financial-report', verifyToken, generateFinancialReportController)

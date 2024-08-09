@@ -1,11 +1,11 @@
 import { Router } from 'express'
-import { requireUser } from '../middlewares/authorization'
+import { requireUser, verifyToken } from '../middlewares/authorization'
 import { addSupplier, deleteSupplierById, editSupplier, getSuppliers } from './supplier.controller'
 
 export const SupplierRouter: Router = Router()
 
-SupplierRouter.get('/', requireUser, getSuppliers)
-SupplierRouter.get('/:id', requireUser, getSuppliers)
-SupplierRouter.post('/', requireUser, addSupplier)
-SupplierRouter.put('/:id', requireUser, editSupplier)
-SupplierRouter.delete('/:id', requireUser, deleteSupplierById)
+SupplierRouter.get('/', verifyToken, getSuppliers)
+SupplierRouter.get('/:id', verifyToken, getSuppliers)
+SupplierRouter.post('/', verifyToken, addSupplier)
+SupplierRouter.put('/:id', verifyToken, editSupplier)
+SupplierRouter.delete('/:id', verifyToken, deleteSupplierById)

@@ -1,11 +1,11 @@
 import { Router } from 'express'
-import { requireUser } from '../middlewares/authorization'
+import { requireUser, verifyToken } from '../middlewares/authorization'
 import { addUnit, deleteUnitById, editUnit, getUnits, searchUnit } from './unit.controller'
 
 export const UnitRouter: Router = Router()
 
-UnitRouter.get('/', requireUser, searchUnit)
-UnitRouter.get('/all', requireUser, getUnits)
-UnitRouter.post('/', requireUser, addUnit)
-UnitRouter.put('/:id', requireUser, editUnit)
-UnitRouter.delete('/:id', requireUser, deleteUnitById)
+UnitRouter.get('/', verifyToken, searchUnit)
+UnitRouter.get('/all', verifyToken, getUnits)
+UnitRouter.post('/', verifyToken, addUnit)
+UnitRouter.put('/:id', verifyToken, editUnit)
+UnitRouter.delete('/:id', verifyToken, deleteUnitById)

@@ -10,17 +10,17 @@ import {
   getOutOfStockDrug,
   updateDrugHandler
 } from './drug.controller'
-import { requireUser } from '../middlewares/authorization'
+import { requireUser, verifyToken } from '../middlewares/authorization'
 
 export const DrugRouter: Router = Router()
 
-DrugRouter.post('/', requireUser, addDrug)
-DrugRouter.get('/', requireUser, getDrugWithPageFilter)
-DrugRouter.get('/all', requireUser, getDrug)
-DrugRouter.get('/almost-expired', requireUser, getAlmostExpiredDrugsHandler)
-DrugRouter.get('/expired', requireUser, getExpiredDrug)
-DrugRouter.get('/out-of-stock', requireUser, getOutOfStockDrug)
-DrugRouter.get('/drug-statistics', requireUser, getDrugStatisticsHandler)
-DrugRouter.get('/:id', requireUser, getDrug)
-DrugRouter.put('/:id', requireUser, updateDrugHandler)
-DrugRouter.delete('/:id', requireUser, deleteDrugById)
+DrugRouter.post('/', verifyToken, addDrug)
+DrugRouter.get('/', verifyToken, getDrugWithPageFilter)
+DrugRouter.get('/all', verifyToken, getDrug)
+DrugRouter.get('/almost-expired', verifyToken, getAlmostExpiredDrugsHandler)
+DrugRouter.get('/expired', verifyToken, getExpiredDrug)
+DrugRouter.get('/out-of-stock', verifyToken, getOutOfStockDrug)
+DrugRouter.get('/drug-statistics', verifyToken, getDrugStatisticsHandler)
+DrugRouter.get('/:id', verifyToken, getDrug)
+DrugRouter.put('/:id', verifyToken, updateDrugHandler)
+DrugRouter.delete('/:id', verifyToken, deleteDrugById)

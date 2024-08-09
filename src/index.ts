@@ -37,7 +37,7 @@ app.use((req, res, next) => {
   next()
 })
 
-app.use(deserializeToken)
+// app.use(deserializeToken)
 
 // Route Configuration
 const _routes: [string, Router][] = [

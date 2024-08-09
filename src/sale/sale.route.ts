@@ -12,18 +12,18 @@ import {
   getTotalIncomeAndSalesController,
   updateSaleController
 } from './sale.controller'
-import { requireUser } from '../middlewares/authorization'
+import { requireUser, verifyToken } from '../middlewares/authorization'
 
 export const SaleRouter: Router = Router()
 
-SaleRouter.post('/', requireUser, createSale)
-SaleRouter.get('/last-invoice', requireUser, getLastInvoiceHandler)
-SaleRouter.get('/sale-statistics', requireUser, getTotalIncomeAndSalesController)
-SaleRouter.get('/sales-data', requireUser, getSalesDataController)
-SaleRouter.get('/recent-sales', requireUser, getRecentSalesController)
-SaleRouter.get('/all-sales', requireUser, getAllSalesController)
-SaleRouter.get('/sales-profit', requireUser, getSalesProfitController)
-SaleRouter.get('/detail-sale/:id', requireUser, getSaleDetailPDF)
-SaleRouter.get('/:id', requireUser, getSaleByIdController)
-SaleRouter.put('/:id', requireUser, updateSaleController)
-SaleRouter.delete('/:id', requireUser, deleteSaleController)
+SaleRouter.post('/', verifyToken, createSale)
+SaleRouter.get('/last-invoice', verifyToken, getLastInvoiceHandler)
+SaleRouter.get('/sale-statistics', verifyToken, getTotalIncomeAndSalesController)
+SaleRouter.get('/sales-data', verifyToken, getSalesDataController)
+SaleRouter.get('/recent-sales', verifyToken, getRecentSalesController)
+SaleRouter.get('/all-sales', verifyToken, getAllSalesController)
+SaleRouter.get('/sales-profit', verifyToken, getSalesProfitController)
+SaleRouter.get('/detail-sale/:id', verifyToken, getSaleDetailPDF)
+SaleRouter.get('/:id', verifyToken, getSaleByIdController)
+SaleRouter.put('/:id', verifyToken, updateSaleController)
+SaleRouter.delete('/:id', verifyToken, deleteSaleController)

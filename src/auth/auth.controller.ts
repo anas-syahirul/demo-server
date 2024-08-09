@@ -13,6 +13,7 @@ import crypto from 'crypto'
 import nodemailer from 'nodemailer'
 import bcrypt from 'bcrypt'
 import { Prisma } from '@prisma/client'
+import jwt from 'jsonwebtoken'
 
 export const registerUser = async (req: Request, res: Response) => {
   const user = req.body
@@ -55,16 +56,20 @@ export const createSession = async (req: Request, res: Response) => {
     if (!isValid) return res.status(401).json({ status: false, statusCode: 401, message: 'Invalid Password' })
 
     const accessToken = signJWT({ ...user }, { expiresIn: '1d' })
+    const secretKey = process.env.JWT_SECRET
+
+    if (!secretKey) {
+      return res.status(500).json({ error: 'JWT secret is not defined' })
+    }
+    const token = jwt.sign({ ...user }, secretKey, { expiresIn: '1d' })
 
     logger.info('Login Success')
-    return res
-      .status(200)
-      .send({
-        status: true,
-        statusCode: 200,
-        message: 'Login success',
-        data: { accessToken, user: { email: user.email, username: user.username } }
-      })
+    return res.status(200).send({
+      status: true,
+      statusCode: 200,
+      message: 'Login success',
+      data: { token, user: { email: user.email, username: user.username } }
+    })
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.log(error.message)
