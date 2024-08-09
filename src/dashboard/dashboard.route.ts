@@ -4,4 +4,4 @@ import { requireUser, verifyToken } from '../middlewares/authorization'
 
 export const DashboardRouter: Router = Router()
 
-DashboardRouter.get('/overview', requireUser, getDashboardStatisticsHandler)
+DashboardRouter.get('/overview', verifyToken, getDashboardStatisticsHandler)
