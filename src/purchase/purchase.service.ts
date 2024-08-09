@@ -18,7 +18,7 @@ const prisma = new PrismaClient()
 
 export interface CreatePurchaseInput {
   date: Date
-  supplierName: string
+  supplier: string
   status: 'Pending' | 'On Delivery' | 'Completed'
   purchaseItems: { drugName: string; quantity: number }[]
   invoice: string
@@ -26,7 +26,7 @@ export interface CreatePurchaseInput {
 }
 
 export const createPurchase = async (data: CreatePurchaseInput) => {
-  const { date, supplierName, status, purchaseItems, invoice, username } = data
+  const { date, supplier, status, purchaseItems, invoice, username } = data
 
   // Validate status
   const validStatuses = ['Pending', 'On Delivery', 'Completed']
@@ -81,7 +81,7 @@ export const createPurchase = async (data: CreatePurchaseInput) => {
   const newPurchase = await prisma.purchase.create({
     data: {
       date,
-      supplierName,
+      supplierName: supplier,
       status,
       purchaseItems: purchaseItems as any,
       invoice,
@@ -90,7 +90,16 @@ export const createPurchase = async (data: CreatePurchaseInput) => {
     }
   })
 
-  return newPurchase
+  return {
+    id: newPurchase.id,
+    date: newPurchase.date,
+    status: newPurchase.status,
+    invoice: newPurchase.invoice,
+    totalPrice: newPurchase.totalPrice,
+    supplier: newPurchase.supplierName,
+    username: newPurchase.username,
+    purchaseItems: newPurchase.purchaseItems
+  }
 }
 
 interface GetAllPurchasesInput {
@@ -184,11 +193,20 @@ export const getRecentPurchases = async (limit: number = 3) => {
       invoice: true,
       date: true,
       totalPrice: true,
-      supplierName: true
+      supplier: {
+        select: {
+          name: true
+        }
+      }
     }
   })
 
-  return purchases
+  return purchases.map((purchase) => ({
+    invoice: purchase.invoice,
+    date: purchase.date,
+    totalPrice: purchase.totalPrice,
+    supplier: purchase.supplier.name
+  }))
 }
 
 const timeZone = 'Asia/Jakarta'
@@ -334,12 +352,12 @@ export const getPurchaseOverview = async () => {
 interface UpdatePurchaseInput {
   id: string
   date?: Date
-  supplierName?: string
+  supplier?: string
   status?: string
   purchaseItems?: { drugName: string; quantity: number }[]
 }
 
-export const updatePurchase = async ({ id, date, supplierName, status, purchaseItems }: UpdatePurchaseInput) => {
+export const updatePurchase = async ({ id, date, supplier, status, purchaseItems }: UpdatePurchaseInput) => {
   const existingPurchase = await prisma.purchase.findUnique({
     where: { id }
   })
@@ -425,14 +443,23 @@ export const updatePurchase = async ({ id, date, supplierName, status, purchaseI
     where: { id },
     data: {
       date,
-      supplierName,
+      supplierName: supplier,
       status,
       purchaseItems: purchaseItems ? purchaseItems : undefined,
       totalPrice
     }
   })
 
-  return updatedPurchase
+  return {
+    id: updatedPurchase.id,
+    date: updatedPurchase.date,
+    status: updatedPurchase.status,
+    invoice: updatedPurchase.invoice,
+    totalPrice: updatedPurchase.totalPrice,
+    supplier: updatedPurchase.supplierName,
+    username: updatedPurchase.username,
+    purchaseItems: updatedPurchase.purchaseItems
+  }
 }
 
 export const deletePurchase = async (purchaseId: string) => {
@@ -464,8 +491,6 @@ export const deletePurchase = async (purchaseId: string) => {
 
   return { message: 'Purchase deleted successfully' }
 }
-
-// const timeZone = 'Asia/Jakarta'
 
 export const getLastInvoice = async (date: Date) => {
   const today = toZonedTime(date, timeZone)
@@ -533,6 +558,33 @@ export const getPurchaseById = async (id: string) => {
     throw new Error('Invalid Purchase id')
   }
 
+  let itemsWithPurchasePrice
+
+  if (purchase.purchaseItems) {
+    const itemsArray = purchase.purchaseItems as unknown as { drugName: string; quantity: number }[]
+    itemsWithPurchasePrice = await Promise.all(
+      itemsArray.map(async (item: any) => {
+        const drug = await prisma.drug.findUnique({
+          where: {
+            name: item.drugName
+          },
+          select: {
+            purchasePrice: true
+          }
+        })
+
+        if (!drug) {
+          throw new Error(`Drug ${item.drugName} not found`)
+        }
+
+        return {
+          ...item,
+          purchasePrice: drug.purchasePrice
+        }
+      })
+    )
+  }
+
   return {
     id: purchase.id,
     date: purchase.date,
@@ -541,6 +593,6 @@ export const getPurchaseById = async (id: string) => {
     totalPrice: purchase.totalPrice,
     supplier: purchase.supplierName,
     username: purchase.username,
-    items: purchase.purchaseItems
+    items: itemsWithPurchasePrice
   }
 }

@@ -15,16 +15,16 @@ import { Prisma } from '@prisma/client'
 
 export const createPurchaseHandler = async (req: Request, res: Response) => {
   try {
-    const { date, supplierName, status, purchaseItems, invoice, totalPrice } = req.body
+    const { date, supplier, status, purchaseItems, invoice, totalPrice } = req.body
     const username = res.locals.user.username
     // Validate request body
-    if (!date || !supplierName || !status || !purchaseItems || !invoice) {
+    if (!date || !supplier || !status || !purchaseItems || !invoice) {
       return res.status(400).send({ status: false, statusCode: 400, message: 'All fields are required' })
     }
 
     const newPurchase = await createPurchase({
       date,
-      supplierName,
+      supplier,
       status,
       purchaseItems,
       invoice,
@@ -57,13 +57,13 @@ export const createPurchaseHandler = async (req: Request, res: Response) => {
 export const updatePurchaseHandler = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const { date, supplierName, status, purchaseItems } = req.body
+    const { date, supplier, status, purchaseItems } = req.body
 
     if (!id) {
       return res.status(400).send({ status: false, statusCode: 400, message: 'Missing ' })
     }
 
-    const updatedPurchase = await updatePurchase({ id, date, supplierName, status, purchaseItems })
+    const updatedPurchase = await updatePurchase({ id, date, supplier, status, purchaseItems })
     logger.info('Success update Purchase')
 
     return res.status(200).send({ status: true, statusCode: 200, data: updatedPurchase })

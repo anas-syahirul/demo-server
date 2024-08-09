@@ -22,7 +22,14 @@ const prisma = new PrismaClient()
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-app.use(cors())
+// app.use(cors())
+app.use(
+  cors({
+    origin: 'https://si-apotek-frontend.vercel.app',
+    methods: 'GET,POST,PUT,DELETE',
+    credentials: true
+  })
+)
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', '*')
