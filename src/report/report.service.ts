@@ -270,10 +270,49 @@ export const getNetIncomeEstimation = async ({
     netIncome
   }
 
+  const existingReport = await prisma.report.findFirst()
+  if (!existingReport) {
+    const newReport = await prisma.report.create({
+      data: {
+        startDate: new Date(startDate).toISOString(),
+        endDate: new Date(endDate).toISOString(),
+        operationCost,
+        taxPercentage,
+        taxes,
+        totalRevenue,
+        COGS: totalCOGS,
+        totalGrossProfit,
+        netIncome
+      }
+    })
+  } else {
+    const updatedReport = await prisma.report.update({
+      where: { id: 1 },
+      data: {
+        startDate: new Date(startDate).toISOString(),
+        endDate: new Date(endDate).toISOString(),
+        operationCost,
+        taxPercentage,
+        taxes,
+        totalRevenue,
+        COGS: totalCOGS,
+        totalGrossProfit,
+        netIncome
+      }
+    })
+  }
+
   // Generate PDF
   const pdfDoc = await generatePDF(result)
 
   return { result, pdfDoc }
+}
+
+export const getPDFReport = async () => {
+  const report = await prisma.report.findFirst()
+
+  const pdfDoc = await generatePDF(report)
+  return pdfDoc
 }
 
 // Fungsi untuk format rupiah
@@ -333,7 +372,8 @@ const generatePDF = async (data: any) => {
           }
         ]
       },
-      { text: ' ', margin: [0, 0] }, // Spacer
+      { text: '(-)', style: 'content', alignment: 'right' },
+      // { text: ' ', margin: [0, 0] }, // Spacer
       {
         columns: [
           { text: 'Total Laba/Rugi Kotor', style: 'content' },
@@ -360,7 +400,7 @@ const generatePDF = async (data: any) => {
           }
         ]
       },
-      { text: ' ', margin: [0, 0] }, // Spacer
+      { text: '(-)', style: 'content', alignment: 'right' },
       {
         columns: [
           { text: 'Total Laba/Rugi Bersih sebelum pajak', style: 'content' },
@@ -387,7 +427,7 @@ const generatePDF = async (data: any) => {
           }
         ]
       },
-      { text: ' ', margin: [0, 0] }, // Spacer
+      { text: '(-)', style: 'content', alignment: 'right' },
       {
         columns: [
           { text: 'Total Laba/Rugi Bersih setelah pajak', style: 'content' },

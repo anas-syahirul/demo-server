@@ -3,7 +3,8 @@ import {
   getCurrentMonthRecap,
   getMonthlyRevenueAndCOGS,
   getNetIncomeEstimation,
-  getYearlyRevenueAndCOGS
+  getYearlyRevenueAndCOGS,
+  getPDFReport
 } from './report.service'
 
 export const getCurrentMonthRecapController = async (req: Request, res: Response) => {
@@ -71,22 +72,12 @@ export const calculateNetIncomeController = async (req: Request, res: Response) 
 
 export const generateFinancialReportController = async (req: Request, res: Response) => {
   try {
-    const { startDate, endDate, operationCost, taxPercentage } = req.body
-
-    if (!startDate || !endDate || operationCost === undefined || taxPercentage === undefined) {
-      return res.status(400).send({
-        status: false,
-        statusCode: 400,
-        message: 'Missing required fields: startDate, endDate, operationCost, taxPercentage'
-      })
-    }
-
-    const data = await getNetIncomeEstimation({ startDate, endDate, operationCost, taxPercentage })
+    const data = await getPDFReport()
 
     // Send PDF as attachment
     res.setHeader('Content-Type', 'application/pdf')
     res.setHeader('Content-Disposition', 'attachment; filename=net-income-estimation.pdf')
-    return res.status(200).send(data.pdfDoc)
+    return res.status(200).send(data)
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message)

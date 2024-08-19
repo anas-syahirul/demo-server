@@ -105,3 +105,16 @@ model Store {
   address   String
   phone     String
 }
+
+model Report {
+  id            Int  @id @default(1)
+  startDate     DateTime
+  endDate       DateTime
+  operationCost Int
+  taxPercentage Float
+  taxes         Float
+  totalRevenue  Float
+  COGS          Int
+  totalGrossProfit  Int
+  netIncome     Int
+}
