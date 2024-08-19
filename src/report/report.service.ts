@@ -335,7 +335,8 @@ const generatePDF = async (data: any) => {
   }
 
   const printer = new PdfPrinter(fonts)
-  const now = toZonedTime(new Date(), 'Asia/Jakarta')
+  const now = format(toZonedTime(new Date(), 'Asia/Jakarta'), 'dd/MM/yyyy HH:mm')
+  // const now = toZonedTime(new Date(), 'Asia/Jakarta')
   // const now = format(new Date(), 'dd/MM/yyyy HH:mm')
   const startDate = format(data.startDate, 'dd/MM/yyyy')
   const endDate = format(data.endDate, 'dd/MM/yyyy')
