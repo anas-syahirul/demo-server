@@ -149,7 +149,7 @@ export const sendResetPasswordEmail = async (req: Request, res: Response) => {
 
     await updateResetPassToken(email, token, resetTokenExpiry)
 
-    const resetURL = `http://${process.env.HOST}/auth/reset-password/${token}`
+    const resetURL = `${process.env.FE_URL}/auth/reset-password/${token}`
 
     const mailOptions = {
       to: email,
